@@ -27,13 +27,21 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+#ifdef WPE_FDO_HAVE_EGLMESAEXT_H
+#include <EGL/eglmesaext.h>
+#endif
+
 #include "linux-dmabuf/linux-dmabuf.h"
-#include "bridge/wpe-bridge-server-protocol.h"
+#include "wpe-bridge-server-protocol.h"
 #include <cassert>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#ifndef WPE_FDO_HAVE_PFNEGLQUERYWAYLANDBUFFERWL
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYWAYLANDBUFFERWL) (EGLDisplay dpy, struct wl_resource *buffer, EGLint attribute, EGLint *value);
+#endif
 
 #ifndef EGL_WL_bind_wayland_display
 #define EGL_WAYLAND_BUFFER_WL 0x31D5

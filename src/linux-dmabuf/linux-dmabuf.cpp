@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "linux-dmabuf.h"
 #include "linux-dmabuf-unstable-v1-server-protocol.h"
-#include "ws.h"
+#include "../ws.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

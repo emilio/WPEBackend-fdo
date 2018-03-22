@@ -1,0 +1,8 @@
+option('exportable-egl',
+	type: 'boolean',
+	value: true,
+	description: 'Enable the exportable EGL interface')
+option('build-docs',
+	type: 'boolean',
+	value: false,
+	description: 'Build reference documentation (needs HotDoc)')
