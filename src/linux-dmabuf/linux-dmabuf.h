@@ -40,3 +40,10 @@ linux_dmabuf_setup(struct wl_display *wl_display);
 
 void
 linux_dmabuf_buffer_destroy(struct linux_dmabuf_buffer *buffer);
+
+void*
+linux_dmabuf_get_user_data(const struct linux_dmabuf_buffer *buffer);
+
+void
+linux_dmabuf_set_user_data(struct linux_dmabuf_buffer *buffer, void *data,
+                           linux_dmabuf_user_data_destroy_func destroy_func);

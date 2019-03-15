@@ -130,7 +130,7 @@ struct Surface {
     ExportableClient* exportableClient { nullptr };
 
     struct wl_resource* bufferResource { nullptr };
-    const struct linux_dmabuf_buffer* dmabufBuffer { nullptr };
+    struct linux_dmabuf_buffer* dmabufBuffer { nullptr };
 };
 
 static const struct wl_surface_interface s_surfaceInterface = {
@@ -177,7 +177,9 @@ static const struct wl_surface_interface s_surfaceInterface = {
             return;
 
         if (surface.dmabufBuffer) {
-            surface.exportableClient->exportLinuxDmabuf(surface.dmabufBuffer);
+            struct wl_resource* bufferResource = surface.bufferResource;
+            surface.bufferResource = nullptr;
+            surface.exportableClient->exportLinuxDmabuf(surface.dmabufBuffer, bufferResource);
         } else {
             struct wl_resource* bufferResource = surface.bufferResource;
             surface.bufferResource = nullptr;
@@ -477,7 +479,7 @@ void Instance::importDmaBufBuffer(struct linux_dmabuf_buffer* buffer)
     wl_list_insert(&m_dmabufBuffers, &buffer->link);
 }
 
-const struct linux_dmabuf_buffer* Instance::getDmaBufBuffer(struct wl_resource* bufferResource) const
+struct linux_dmabuf_buffer* Instance::getDmaBufBuffer(struct wl_resource* bufferResource) const
 {
     if (!m_linuxDmabuf)
         return nullptr;

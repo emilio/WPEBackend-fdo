@@ -78,7 +78,7 @@ destroy_wl_buffer_resource(struct wl_resource *resource)
     assert(!buffer->params_resource);
 
     if (buffer->user_data_destroy_func)
-        buffer->user_data_destroy_func(buffer);
+        buffer->user_data_destroy_func((struct linux_dmabuf_buffer *) buffer->user_data);
 
     linux_dmabuf_buffer_destroy(buffer);
 }
@@ -246,7 +246,7 @@ params_create_common(struct wl_client *client, struct wl_resource *params_resour
 
  err_buffer:
     if (buffer->user_data_destroy_func)
-        buffer->user_data_destroy_func(buffer);
+        buffer->user_data_destroy_func((struct linux_dmabuf_buffer *) buffer->user_data);
 
  err_failed:
     if (buffer_id == 0) {
@@ -409,4 +409,22 @@ linux_dmabuf_buffer_destroy(struct linux_dmabuf_buffer *buffer)
     wl_list_remove(&buffer->link);
 
     free(buffer);
+}
+
+void*
+linux_dmabuf_get_user_data(const struct linux_dmabuf_buffer *buffer)
+{
+    assert (buffer);
+
+    return buffer->user_data;
+}
+
+void
+linux_dmabuf_set_user_data(struct linux_dmabuf_buffer *buffer, void *data,
+                           linux_dmabuf_user_data_destroy_func destroy_func)
+{
+    assert (buffer);
+
+    buffer->user_data = data;
+    buffer->user_data_destroy_func = destroy_func;
 }
