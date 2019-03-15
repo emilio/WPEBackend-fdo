@@ -73,16 +73,28 @@ public:
         client->export_egl_image(data, image);
     }
 
-    void exportBuffer(const struct linux_dmabuf_buffer *dmabuf_buffer) override
+    void exportBuffer(struct linux_dmabuf_buffer *dmabuf_buffer, struct wl_resource* buffer_resource) override
     {
         EGLImageKHR image = WS::Instance::singleton().createImage(dmabuf_buffer);
+
+        auto* previous_buffer_resource  = (struct wl_resource*) linux_dmabuf_get_user_data (dmabuf_buffer);
+        if (previous_buffer_resource) {
+            for (auto* buf_data : m_buffers) {
+                if (buf_data->buffer_resource == previous_buffer_resource) {
+                    client->export_egl_image(data, buf_data->egl_image);
+                    return;
+                }
+            }
+        }
+
         if (!image)
             return;
 
         auto* buf_data = new struct buffer_data;
-        buf_data->buffer_resource = nullptr;
+        buf_data->buffer_resource = buffer_resource;
         buf_data->egl_image = image;
         m_buffers.push_back(buf_data);
+        linux_dmabuf_set_user_data (dmabuf_buffer, (void*) buffer_resource, NULL);
 
         client->export_egl_image(data, image);
     }

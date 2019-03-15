@@ -45,7 +45,7 @@ public:
         client->export_buffer_resource(data, bufferResource);
     }
 
-    void exportBuffer(const struct linux_dmabuf_buffer *dmabuf_buffer) override
+    void exportBuffer(struct linux_dmabuf_buffer*, struct wl_resource*) override
     {
         assert(!"This interface doesn't support Linux DMA buffers");
     }

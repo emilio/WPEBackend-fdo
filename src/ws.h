@@ -39,7 +39,7 @@ namespace WS {
 struct ExportableClient {
     virtual void frameCallback(struct wl_resource*) = 0;
     virtual void exportBufferResource(struct wl_resource*) = 0;
-    virtual void exportLinuxDmabuf(const struct linux_dmabuf_buffer *dmabuf_buffer) = 0;
+    virtual void exportLinuxDmabuf(struct linux_dmabuf_buffer*, struct wl_resource*) = 0;
 };
 
 struct Surface;
@@ -67,7 +67,7 @@ public:
     void destroyImage(EGLImageKHR);
 
     void importDmaBufBuffer(struct linux_dmabuf_buffer*);
-    const struct linux_dmabuf_buffer* getDmaBufBuffer(struct wl_resource*) const;
+    struct linux_dmabuf_buffer* getDmaBufBuffer(struct wl_resource*) const;
     void foreachDmaBufModifier(std::function<void (int format, uint64_t modifier)>);
 
 private:
