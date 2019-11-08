@@ -63,7 +63,7 @@ api_headers = [
 
 	# Generated API headers.
 	configure_file(
-		input: 'include/wpe-fdo/version.h.cmake',
+		input: 'include/wpe-fdo/version.h.in',
 		output: 'version.h',
 		configuration: version_info,
 	),

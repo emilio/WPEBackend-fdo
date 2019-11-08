@@ -14,15 +14,19 @@ addons:
       - libglib2.0-dev
       - libxkbcommon-dev
       - libwayland-dev
-      - ninja-build
       - libjson-glib-dev
+      - ninja-build
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
 
 env:
   matrix:
-    - BUILD_TYPE=Debug   EXPORTABLE_EGL=ON
-    - BUILD_TYPE=Release EXPORTABLE_EGL=OFF
+    - BUILD_TYPE=Debug   MESON_BUILD_TYPE=debug   EXPORTABLE_EGL=true
+    - BUILD_TYPE=Release MESON_BUILD_TYPE=release EXPORTABLE_EGL=false
 
 cache:
+  pip: true
   ccache: true
   directories:
     - $HOME/libwpe
@@ -47,11 +51,14 @@ install: |-
   cmake ~/libwpe/ -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DBUILD_DOCS=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/libwpe-prefix -DCMAKE_INSTALL_LIBDIR=${HOME}/libwpe-prefix/lib
   TERM=dumb cmake --build . --parallel $(nproc) --target install
   popd
+  : 'Install Meson'
+  python3 -m pip install --upgrade pip meson
 
 script: |-
   : 'Build'
   set -e
-  mkdir _build/ && cd "$_"
   PKG_CONFIG_PATH=${HOME}/libwpe-prefix/lib/pkgconfig \
-    cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
-  TERM=dumb cmake --build . --parallel $(nproc)
+    meson _build --buildtype=${MESON_BUILD_TYPE} \
+    -Dexportable-egl=${EXPORTABLE_EGL}
+  ninja -C _build
+  DESTDIR="$(pwd)/_prefix" ninja -C _build install
